@@ -1,1 +1,1 @@
-# GSN-carrot-BACK-java
+# carrot-backend
