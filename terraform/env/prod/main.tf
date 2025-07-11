@@ -33,6 +33,21 @@ module "eks" {
   cluster_endpoint_private_access      = true # 프라이빗 엔드포인트도 허용
   cluster_endpoint_public_access_cidrs = ["119.196.71.73/32", "211.44.198.26/32"]
 
+  # EKS 접근 권한 설정
+  access_entries = {
+    tenaya-admin = {
+      principal_arn = "arn:aws:iam::891377077611:user/tenaya-admin"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
   eks_managed_node_groups = {
     default = {
       instance_types = ["t3.medium"]

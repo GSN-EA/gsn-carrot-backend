@@ -50,12 +50,16 @@ terraform apply
 
 ### 3단계: EKS 접근 권한 추가
 
-#### 현재 AWS 사용자 정보 확인
+⚠️ **중요**: CLI로 접근 권한을 추가한 후에는 반드시 Terraform 코드에도 반영해야 합니다.
+
+#### 방법 1: CLI로 직접 추가 (임시 해결책)
+
+##### 현재 AWS 사용자 정보 확인
 ```bash
 aws sts get-caller-identity
 ```
 
-#### EKS 접근 엔트리 생성
+##### EKS 접근 엔트리 생성
 ```bash
 aws eks create-access-entry \
   --cluster-name gsn-carrot-cluster \
@@ -63,7 +67,7 @@ aws eks create-access-entry \
   --region ap-northeast-2
 ```
 
-#### 클러스터 관리자 권한 부여
+##### 클러스터 관리자 권한 부여
 ```bash
 aws eks associate-access-policy \
   --cluster-name gsn-carrot-cluster \
@@ -71,6 +75,45 @@ aws eks associate-access-policy \
   --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy \
   --access-scope type=cluster \
   --region ap-northeast-2
+```
+
+#### 방법 2: Terraform으로 관리 (권장)
+
+`main.tf` 파일의 EKS 모듈에 `access_entries` 설정 추가:
+
+```hcl
+module "eks" {
+  # ... 기타 설정
+
+  # EKS 접근 권한 설정
+  access_entries = {
+    admin-user = {
+      principal_arn = "arn:aws:iam::<ACCOUNT_ID>:user/<USERNAME>"
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
+  # ... 기타 설정
+}
+```
+
+CLI로 추가한 권한을 Terraform으로 가져오기:
+```bash
+# Access Entry import
+terraform import 'module.eks.aws_eks_access_entry.this["admin-user"]' gsn-carrot-cluster:arn:aws:iam::<ACCOUNT_ID>:user/<USERNAME>
+
+# Policy Association import
+terraform import 'module.eks.aws_eks_access_policy_association.this["admin-user_admin"]' 'gsn-carrot-cluster#arn:aws:iam::<ACCOUNT_ID>:user/<USERNAME>#arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy'
+
+# 적용
+terraform apply
 ```
 
 ### 4단계: kubeconfig 업데이트 및 접속 테스트
@@ -113,6 +156,8 @@ aws eks update-kubeconfig --region ap-northeast-2 --name gsn-carrot-cluster
 - IP 주소는 변경될 수 있으므로 정기적으로 확인 필요
 - 보안을 위해 `0.0.0.0/0` 대신 특정 IP만 허용하는 것을 권장
 - EKS 접근 권한은 클러스터 생성자가 아닌 경우 별도로 추가해야 함
+- **CLI로 접근 권한을 추가한 경우 반드시 Terraform 코드에 반영**하여 Infrastructure as Code 원칙 준수
+- EKS v1.23+ 부터는 새로운 Access Entries API 방식 사용 (기존 ConfigMap 방식과 병행)
 
 ### 해결 일시
 - 2025-07-11 11:10 KST
