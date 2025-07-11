@@ -31,7 +31,7 @@ module "eks" {
 
   cluster_endpoint_public_access       = true # 퍼블릭 엔드포인트 허용
   cluster_endpoint_private_access      = true # 프라이빗 엔드포인트도 허용
-  cluster_endpoint_public_access_cidrs = ["119.196.71.73/32"]
+  cluster_endpoint_public_access_cidrs = ["119.196.71.73/32", "211.44.198.26/32"]
 
   eks_managed_node_groups = {
     default = {
