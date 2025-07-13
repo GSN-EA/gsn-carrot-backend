@@ -139,3 +139,25 @@ output "kms_key_arn" {
   description = "KMS key ARN for RDS encryption"
   value       = aws_kms_key.rds.arn
 }
+
+# Route53 관련 출력값들
+output "route53_zone_id" {
+  description = "Route53 hosted zone ID"
+  value       = aws_route53_zone.main.zone_id
+}
+
+output "route53_zone_name" {
+  description = "Route53 hosted zone name"
+  value       = aws_route53_zone.main.name
+}
+
+# ACM 관련 출력값들
+output "acm_certificate_arn" {
+  description = "ACM certificate ARN"
+  value       = aws_acm_certificate.main.arn
+}
+
+output "acm_certificate_domain" {
+  description = "ACM certificate domain"
+  value       = aws_acm_certificate.main.domain_name
+}
