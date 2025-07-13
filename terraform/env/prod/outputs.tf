@@ -88,3 +88,54 @@ output "oidc_provider_arn" {
   description = "EKS 클러스터에 연결된 OIDC Provider의 ARN"
   value       = module.eks.oidc_provider_arn
 }
+
+# ECR 관련 출력값들
+output "ecr_repository_url" {
+  description = "ECR repository URL for user-api"
+  value       = aws_ecr_repository.user_api.repository_url
+}
+
+output "ecr_repository_name" {
+  description = "ECR repository name for user-api"
+  value       = aws_ecr_repository.user_api.name
+}
+
+# RDS 관련 출력값들
+output "rds_endpoint" {
+  description = "RDS MySQL endpoint"
+  value       = aws_db_instance.main.endpoint
+  sensitive   = true
+}
+
+output "rds_port" {
+  description = "RDS MySQL port"
+  value       = aws_db_instance.main.port
+}
+
+output "rds_database_name" {
+  description = "RDS database name"
+  value       = aws_db_instance.main.db_name
+}
+
+# Secrets Manager 관련 출력값들
+output "secrets_manager_secret_name" {
+  description = "Secrets Manager secret name for DB credentials"
+  value       = aws_secretsmanager_secret.db_credentials.name
+}
+
+output "secrets_manager_secret_arn" {
+  description = "Secrets Manager secret ARN for DB credentials"
+  value       = aws_secretsmanager_secret.db_credentials.arn
+  sensitive   = true
+}
+
+# KMS 관련 출력값들
+output "kms_key_id" {
+  description = "KMS key ID for RDS encryption"
+  value       = aws_kms_key.rds.key_id
+}
+
+output "kms_key_arn" {
+  description = "KMS key ARN for RDS encryption"
+  value       = aws_kms_key.rds.arn
+}

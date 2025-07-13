@@ -79,6 +79,9 @@ hs_err_pid*.log
 # =================================================
 # Terraform
 # =================================================
+# Terraform variable files
+terraform.tfvars
+
 # Local .terraform directories (모든 하위 디렉토리 포함)
 **/.terraform/
 
@@ -108,3 +111,6 @@ override.tf.json
 
 # Terraform plan files
 *.tfplan
+
+# Claude
+.claude/
