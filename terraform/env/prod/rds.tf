@@ -49,7 +49,7 @@ resource "aws_security_group" "rds" {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.eks_worker.id]
+    security_groups = [module.eks.cluster_security_group_id]
   }
 
   egress {
