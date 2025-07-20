@@ -15,10 +15,9 @@ spec:
       labels:
         app: user-api
     spec:
-      serviceAccountName: user-api-service-account
       containers:
         - name: user-api
-          image: 891377077611.dkr.ecr.ap-northeast-2.amazonaws.com/gsn-carrot/user-api:latest
+          image: 891377077611.dkr.ecr.ap-northeast-2.amazonaws.com/gsn-carrot/user-api:ce85a44
           ports:
             - containerPort: 8080
               name: http
@@ -48,6 +47,11 @@ spec:
                 secretKeyRef:
                   name: user-api-db-secret
                   key: DB_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET
           livenessProbe:
             httpGet:
               path: /actuator/health
