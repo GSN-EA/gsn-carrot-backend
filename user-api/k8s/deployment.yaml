@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: user-api
-          image: 891377077611.dkr.ecr.ap-northeast-2.amazonaws.com/gsn-carrot/user-api:ce85a44
+          image: 891377077611.dkr.ecr.ap-northeast-2.amazonaws.com/gsn-carrot/user-api:d8b3452
           ports:
             - containerPort: 8080
               name: http
