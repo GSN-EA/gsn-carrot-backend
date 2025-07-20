@@ -16,4 +16,10 @@ module "vpc" {
     "kubernetes.io/cluster/gsn-carrot-cluster" = "shared"
     "Environment"                              = "prod"
   }
+
+  # 퍼블릭 서브넷에 태그를 추가하여 loadbalancer controller가 로드밸런서를 생성할 수 있도록 한다.
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = "1"
+  }
+
 }
