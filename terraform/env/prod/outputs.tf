@@ -84,6 +84,16 @@ output "eks_managed_node_groups" {
   value       = module.eks.eks_managed_node_groups
 }
 
+output "cluster_primary_security_group_id" {
+  description = "EKS 클러스터의 Primary Security Group ID"
+  value       = module.eks.cluster_security_group_id
+}
+
+output "eks_node_security_group_id" {
+  description = "EKS 노드 보안 그룹 ID"
+  value       = module.eks.node_security_group_id
+}
+
 output "oidc_provider_arn" {
   description = "EKS 클러스터에 연결된 OIDC Provider의 ARN"
   value       = module.eks.oidc_provider_arn

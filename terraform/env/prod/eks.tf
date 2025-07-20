@@ -35,30 +35,11 @@ module "eks" {
       min_size       = 1
       max_size       = 3
       desired_size   = 2
+
     }
   }
 
   tags = {
-    Environment = "prod"
-    Terraform   = "true"
-  }
-}
-
-# Security Group for EKS Worker Nodes
-resource "aws_security_group" "eks_worker" {
-  name        = "gsn-carrot-eks-worker-sg"
-  description = "Security group for EKS worker nodes"
-  vpc_id      = module.vpc.vpc_id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name        = "gsn-carrot-eks-worker-sg"
     Environment = "prod"
     Terraform   = "true"
   }
