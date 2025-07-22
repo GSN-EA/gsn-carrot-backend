@@ -65,6 +65,37 @@ resource "aws_route53_record" "api_dns" {
 }
 
 ##############################
+# 프론트엔드 Route53 레코드 구역
+##############################
+# 프로덕션 프론트엔드 CNAME 레코드
+resource "aws_route53_record" "frontend_prod" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "shop.${aws_route53_zone.main.name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = ["d2ghzjuypu9nyc.cloudfront.net"]
+}
+
+resource "aws_route53_record" "frontend_prod_subdomain_acm_validation" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "_1a2e3150b1f5cfb4a2c48dfe17c060d9.shop.${aws_route53_zone.main.name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = ["_6b2f235aee95a41b459458ab3c68500e.xlfgrmvvlj.acm-validations.aws."]
+}
+
+
+# Chat API CNAME 레코드
+resource "aws_route53_record" "chat_api" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "chat.${aws_route53_zone.main.name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = ["m529bw2gn1.execute-api.ap-northeast-2.amazonaws.com"]
+}
+
+
+##############################
 # ACM 인증서 검증 구역
 ##############################
 # ACM이 요청하는 DNS 검증 레코드를 Route 53에 자동으로 생성
