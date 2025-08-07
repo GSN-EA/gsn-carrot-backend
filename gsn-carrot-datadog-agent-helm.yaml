@@ -1,0 +1,34 @@
+datadog:
+  site: "datadoghq.com"
+  apiKeyExistingSecret: "datadog-secret"
+  tags:
+    - "env:prod"
+  apm:
+    instrumentation:
+      enabled: true
+      targets:
+        - name: "default-target"
+          ddTraceVersions:
+            java: "1"
+            python: "3"
+            js: "5"
+  logs:
+    enabled: true
+    containerCollectAll: true
+  asm:
+    threats:
+      enabled: true
+  securityAgent:
+    runtime:
+      enabled: true
+    compliance:
+      enabled: true
+  sbom:
+    containerImage:
+      enabled: true
+    host:
+      enabled: true
+  networkMonitoring:
+    enabled: true
+  processAgent:
+    processCollection: true
