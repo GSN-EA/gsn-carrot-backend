@@ -3,7 +3,7 @@ module "eks" {
   version = "20.36.0"
 
   cluster_name    = "gsn-carrot-cluster"
-  cluster_version = "1.29"
+  cluster_version = "1.33"
 
   subnet_ids  = module.vpc.private_subnets
   vpc_id      = module.vpc.vpc_id
@@ -31,11 +31,12 @@ module "eks" {
   eks_managed_node_groups = {
     default = {
       ami_type       = "AL2023_x86_64_STANDARD"
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.small"]
       min_size       = 1
       max_size       = 3
       desired_size   = 2
 
+      force_update_version = true
     }
   }
 
