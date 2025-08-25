@@ -5,6 +5,10 @@ metadata:
   namespace: gsn-carrot
   labels:
     app: user-api
+    tags.datadoghq.com/env: prod
+    tags.datadoghq.com/service: user-api
+    tags.datadoghq.com/version: d8b3452
+
 spec:
   replicas: 2
   selector:
@@ -14,6 +18,10 @@ spec:
     metadata:
       labels:
         app: user-api
+        tags.datadoghq.com/env: prod
+        tags.datadoghq.com/service: user-api
+        tags.datadoghq.com/version: d8b3452
+        admission.datadoghq.com/enabled: "true"
     spec:
       containers:
         - name: user-api
@@ -52,6 +60,19 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_SECRET
+
+            - name: DD_PROFILING_ENABLED
+              value: "true"
+            - name: DD_LOGS_INJECTION
+              value: "true"
+            - name: DD_APPSEC_ENABLED
+              value: "true"
+            - name: DD_IAST_ENABLED
+              value: "true"
+            - name: DD_APPSEC_SCA_ENABLED
+              value: "true"
+            - name: DD_GIT_REPOSITORY_URL
+              value: github.com/gsn-ea/gsn-carrot-backend
           livenessProbe:
             httpGet:
               path: /actuator/health
@@ -71,7 +92,7 @@ spec:
           resources:
             requests:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "300m"
             limits:
-              memory: "1Gi"
-              cpu: "1000m"
+              memory: "512Mi"
+              cpu: "300m"

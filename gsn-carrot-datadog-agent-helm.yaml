@@ -1,17 +1,16 @@
+targetSystem: "linux"
 datadog:
   site: "datadoghq.com"
   apiKeyExistingSecret: "datadog-secret"
   tags:
     - "env:prod"
-  apm:
-    instrumentation:
+  autoscaling:
+    workload:
       enabled: true
-      targets:
-        - name: "default-target"
-          ddTraceVersions:
-            java: "1"
-            python: "3"
-            js: "5"
+  kubernetesEvents:
+    unbundleEvents: true
+  apm:
+    socketEnabled: true
   logs:
     enabled: true
     containerCollectAll: true
@@ -32,3 +31,42 @@ datadog:
     enabled: true
   processAgent:
     processCollection: true
+
+  otelCollector:
+    enabled: true
+    ports:
+      - containerPort: 4317
+        hostPort: 4317
+        name: "otel-grpc"
+      - containerPort: 4318
+        hostPort: 4318
+        name: "otel-http"
+
+clusterAgent:
+  admissionController:
+    enabled: true
+
+agents:
+  useConfigMap: true
+  customAgentConfig:
+    additional_endpoints:
+      "https://app.datadoghq.com":
+        - "1f8d432f24fc2a9d7390c1aa6781d9cd"
+
+    compliance_config:
+      endpoints:
+        force_use_http: true
+        additional_endpoints:
+          - api_key: "1f8d432f24fc2a9d7390c1aa6781d9cd"
+            Host: "cspm-intake.datadoghq.com"
+            Port: 443
+            is_reliable: true
+
+    runtime_security_config:
+      endpoints:
+        force_use_http: true
+        additional_endpoints:
+          - api_key: "1f8d432f24fc2a9d7390c1aa6781d9cd"
+            Host: "runtime-security-http-intake.logs.datadoghq.com"
+            Port: 443
+            is_reliable: true
