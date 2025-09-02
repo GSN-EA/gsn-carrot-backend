@@ -1,13 +1,14 @@
 # 📦 Product-API 구현 계획 (Living Docs)
 
 > **Living Document**: 이 문서는 구현 진행에 따라 지속적으로 업데이트됩니다.
-> 
-> **Last Updated**: 2025-08-25  
-> **Status**: 🔄 Planning Phase
+>
+> **Last Updated**: 2025-09-02
+> **Status**: 🚧 Development Phase
 
 ---
 
 ## 📖 목차
+
 1. [프로젝트 개요](#프로젝트-개요)
 2. [API 명세](#api-명세)
 3. [데이터베이스 설계](#데이터베이스-설계)
@@ -23,6 +24,7 @@
 ## 🎯 프로젝트 개요
 
 당근마켓 클론 프로젝트의 상품 관련 API 서비스입니다.
+
 - **기존 user-api와 동일한 RDS 및 JWT 시크릿 공유**
 - **RESTful API 설계**
 - **Spring Boot + JPA + MySQL 기반**
@@ -35,12 +37,13 @@
 ### 🔓 공개 API (인증 불필요)
 
 #### 1. 상품 목록 조회
+
 ```
 GET /api/v1/product
 Query Parameters:
 - search: string (선택) - 제목 검색
 - page: int (기본값: 0) - 페이지 번호
-- size: int (기본값: 10) - 페이지 크기  
+- size: int (기본값: 10) - 페이지 크기
 - sort: string (기본값: createdAt,desc) - 정렬 (createdAt,desc | price,asc | title,asc)
 
 Response: 200 OK
@@ -65,6 +68,7 @@ Response: 200 OK
 ```
 
 #### 2. 상품 상세 조회
+
 ```
 GET /api/v1/product/{productId}
 
@@ -94,6 +98,7 @@ Response: 404 Not Found
 ### 🔒 인증 필요 API
 
 #### 3. 상품 등록
+
 ```
 POST /api/v1/product
 Header: Authorization: Bearer {jwt_token}
@@ -131,6 +136,7 @@ Response: 413 Payload Too Large
 ```
 
 #### 4. 상품 수정
+
 ```
 PUT /api/v1/product/{productId}
 Header: Authorization: Bearer {jwt_token}
@@ -155,6 +161,7 @@ Response: 403 Forbidden
 ```
 
 #### 5. 상품 삭제
+
 ```
 DELETE /api/v1/product/{productId}
 Header: Authorization: Bearer {jwt_token}
@@ -171,6 +178,7 @@ Response: 403 Forbidden
 ```
 
 #### 6. 판매 완료 처리
+
 ```
 POST /api/v1/product/{productId}/sold
 Header: Authorization: Bearer {jwt_token}
@@ -182,6 +190,7 @@ Response: 200 OK
 ```
 
 #### 7. 내 상품 목록 조회
+
 ```
 GET /api/v1/product/my
 Header: Authorization: Bearer {jwt_token}
@@ -204,7 +213,7 @@ Response: 200 OK
 ```sql
 CREATE TABLE products (
     product_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '상품 고유 ID',
-    user_id BIGINT NOT NULL COMMENT '등록 사용자 ID', 
+    user_id BIGINT NOT NULL COMMENT '등록 사용자 ID',
     title VARCHAR(255) NOT NULL COMMENT '상품 제목',
     price INT NOT NULL COMMENT '가격 (원 단위)',
     image_url VARCHAR(500) NOT NULL COMMENT 'S3 이미지 URL',
@@ -212,7 +221,7 @@ CREATE TABLE products (
     on_sale BOOLEAN DEFAULT TRUE COMMENT '판매중 여부',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
-    
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_on_sale (on_sale),
@@ -231,30 +240,30 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Long id;
-    
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
-    
+
     @Column(nullable = false, length = 255)
     private String title;
-    
+
     @Column(nullable = false)
     private Integer price;
-    
+
     @Column(name = "image_url", nullable = false, length = 500)
     private String imageUrl;
-    
+
     @Column(columnDefinition = "TEXT")
     private String description;
-    
+
     @Column(name = "on_sale")
     private Boolean onSale = true;
-    
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
-    @UpdateTimestamp 
+
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
@@ -286,7 +295,7 @@ spring.jpa.open-in-view=false
 spring.sql.init.mode=always
 spring.sql.init.continue-on-error=true
 
-# Swagger UI 설정  
+# Swagger UI 설정
 springdoc.api-docs.path=/api-docs
 springdoc.swagger-ui.path=/swagger-ui.html
 springdoc.swagger-ui.operationsSorter=method
@@ -300,7 +309,7 @@ management.health.db.enabled=true
 # JWT Configuration
 jwt.secret=${JWT_SECRET}
 
-# S3 Configuration  
+# S3 Configuration
 aws.s3.bucket=${S3_BUCKET_NAME}
 aws.s3.region=${AWS_REGION:ap-northeast-2}
 
@@ -322,29 +331,29 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    
+
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-    
+
     // Security
     implementation 'org.springframework.security:spring-security-crypto:6.2.1'
-    
+
     // Documentation
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
-    
+
     // AWS S3
     implementation 'software.amazon.awssdk:s3:2.20.162'
-    
+
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2' // 테스트용
-    
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -356,23 +365,25 @@ dependencies {
 ## 🔐 JWT 인증 및 보안
 
 ### 인증 구조
+
 - **user-api와 동일한 JWT_SECRET 공유**
 - **JWTUtil, JwtAuthInterceptor 클래스 재사용**
 - **토큰에서 userId 추출하여 권한 검증**
 
 ### 권한 매트릭스
 
-| API | 인증 필요 | 권한 검증 |
-|-----|----------|----------|
-| GET /product | ❌ | - |
-| GET /product/{id} | ❌ | - |
-| POST /product | ✅ | JWT 유효성 |
-| PUT /product/{id} | ✅ | 상품 소유자 |
-| DELETE /product/{id} | ✅ | 상품 소유자 |
-| POST /product/{id}/sold | ✅ | 상품 소유자 |
-| GET /product/my | ✅ | JWT 유효성 |
+| API                     | 인증 필요 | 권한 검증   |
+| ----------------------- | --------- | ----------- |
+| GET /product            | ❌        | -           |
+| GET /product/{id}       | ❌        | -           |
+| POST /product           | ✅        | JWT 유효성  |
+| PUT /product/{id}       | ✅        | 상품 소유자 |
+| DELETE /product/{id}    | ✅        | 상품 소유자 |
+| POST /product/{id}/sold | ✅        | 상품 소유자 |
+| GET /product/my         | ✅        | JWT 유효성  |
 
 ### 보안 고려사항
+
 - **입력값 검증**: @Valid, @NotBlank, @Min, @Max
 - **파일 업로드 검증**: 파일 타입, 크기 제한
 - **SQL 인젝션 방지**: JPA Query Methods 사용
@@ -383,23 +394,24 @@ dependencies {
 
 ## 🛠️ 기술 스택
 
-| 분야 | 기술 |
-|------|------|
-| **Framework** | Spring Boot 3.2.0 |
-| **Language** | Java 17 |
-| **Database** | MySQL 8.0 (RDS) |
-| **ORM** | Spring Data JPA |
+| 분야               | 기술                      |
+| ------------------ | ------------------------- |
+| **Framework**      | Spring Boot 3.2.0         |
+| **Language**       | Java 17                   |
+| **Database**       | MySQL 8.0 (RDS)           |
+| **ORM**            | Spring Data JPA           |
 | **Authentication** | JWT (jsonwebtoken 0.11.5) |
-| **Documentation** | Swagger UI (SpringDoc) |
-| **Build Tool** | Gradle |
-| **Deployment** | Kubernetes |
-| **Container** | Docker |
+| **Documentation**  | Swagger UI (SpringDoc)    |
+| **Build Tool**     | Gradle                    |
+| **Deployment**     | Kubernetes                |
+| **Container**      | Docker                    |
 
 ---
 
 ## 📝 구현 우선순위
 
 ### Phase 1: 기본 인프라 (1일)
+
 - [ ] 프로젝트 설정 및 의존성 추가
 - [ ] application.properties 설정
 - [ ] JWT 관련 클래스 복사 (user-api에서)
@@ -407,23 +419,27 @@ dependencies {
 - [ ] schema.sql 작성
 
 ### Phase 2: 핵심 API (1일)
+
 - [ ] ProductController 구현
 - [ ] ProductService 구현 (기본 CRUD)
 - [ ] DTO 클래스 구현
 - [ ] 예외 처리 (GlobalExceptionHandler)
 
-### Phase 3: 고급 기능 (0.5일)  
+### Phase 3: 고급 기능 (0.5일)
+
 - [ ] 검색 기능 (제목 기반)
 - [ ] 페이징 및 정렬
 - [ ] JWT 인증 적용
 - [ ] 권한 검증 로직
 
 ### Phase 4: 테스트 및 문서화 (0.5일)
+
 - [ ] 단위 테스트 작성
 - [ ] Swagger 문서화
 - [ ] README.md 작성
 
 ### Phase 5: 배포 (0.5일)
+
 - [ ] Dockerfile 작성
 - [ ] K8s 배포 파일 작성
 - [ ] 배포 및 검증
@@ -435,10 +451,12 @@ dependencies {
 ## ☸️ K8s 배포 구성
 
 ### 시크릿 사용 전략
+
 - **DB 시크릿**: 기존 `user-api-db-secret` 재사용
 - **JWT 시크릿**: 기존 `jwt-secret` 재사용
 
 ### Deployment 환경변수
+
 ```yaml
 env:
   - name: DB_HOST
@@ -446,7 +464,7 @@ env:
       secretKeyRef:
         name: user-api-db-secret
         key: DB_HOST
-  - name: DB_PORT  
+  - name: DB_PORT
     valueFrom:
       secretKeyRef:
         name: user-api-db-secret
@@ -485,17 +503,20 @@ env:
 ## ✅ 체크리스트
 
 ### 🔧 개발 환경 설정
+
 - [ ] build.gradle 의존성 추가 (AWS SDK 포함)
 - [ ] application.properties 설정 (S3, 파일업로드 설정 포함)
 - [ ] schema.sql 작성
 - [ ] user-api JWT 클래스 복사
 
 ### 📦 모델 및 리포지토리
+
 - [ ] Product Entity 구현
 - [ ] ProductRepository 인터페이스
 - [ ] 기본 쿼리 메서드 정의
 
-### 🌐 API 구현  
+### 🌐 API 구현
+
 - [ ] ProductController 클래스 (MultipartFile 처리 포함)
 - [ ] ProductService 클래스
 - [ ] S3Service 클래스 (이미지 업로드/삭제)
@@ -503,26 +524,30 @@ env:
 - [ ] 파일 업로드 검증 로직 (타입, 크기)
 
 ### 🔐 보안 및 인증
+
 - [ ] JWTUtil 클래스 복사
-- [ ] JwtAuthInterceptor 클래스 복사  
+- [ ] JwtAuthInterceptor 클래스 복사
 - [ ] WebConfig 설정
 - [ ] 권한 검증 로직 구현
 
 ### 🧪 테스트
+
 - [ ] ProductService 단위 테스트
 - [ ] S3Service 단위 테스트
 - [ ] ProductController 통합 테스트 (파일 업로드 포함)
 - [ ] API 엔드포인트 테스트
 
 ### 📚 문서화
+
 - [ ] Swagger 어노테이션 추가
 - [ ] API 문서 확인
 - [ ] README.md 작성
 
 ### 🚀 배포
+
 - [ ] Dockerfile 작성
 - [ ] K8s Deployment YAML (S3 환경변수 포함)
-- [ ] K8s Service YAML  
+- [ ] K8s Service YAML
 - [ ] K8s Ingress YAML
 - [ ] S3 버킷 및 시크릿 설정 확인
 - [ ] 배포 후 동작 확인
@@ -532,16 +557,26 @@ env:
 ## 📝 진행 상황
 
 ### ✅ 완료된 작업
+
 - PLAN.md 문서 작성 (단일 이미지 업로드 방식)
 - API 명세 정의 (multipart/form-data 방식)
 - DB 스키마 설계 (단순화된 products 테이블)
 - 환경 설정 및 의존성 정의 (S3, AWS SDK 포함)
+- **Phase 1 완료**: build.gradle 의존성 추가
+- **Phase 1 완료**: application.properties 설정
+- **Phase 1 완료**: JWT 클래스 복사 (JWTUtil, JwtAuthInterceptor)
 
-### 🔄 진행 중인 작업  
-- 없음
+### 🔄 진행 중인 작업
+
+- Phase 2: Product Entity 및 Repository 구현
+- Phase 2: schema.sql 작성
 
 ### ⏳ 대기 중인 작업
-- 전체 구현
+
+- Phase 2: ProductController 및 Service 구현
+- Phase 3: 검색, 페이징, JWT 인증 적용
+- Phase 4: 테스트 및 문서화
+- Phase 5: 배포
 
 ---
 
