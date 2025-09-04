@@ -4,6 +4,8 @@ datadog:
   apiKeyExistingSecret: "datadog-secret"
   tags:
     - "env:prod"
+  remoteConfiguration:
+    enabled: true
   autoscaling:
     workload:
       enabled: true
@@ -22,11 +24,17 @@ datadog:
       enabled: true
     compliance:
       enabled: true
+      host_benchmarks:
+        enabled: true
   sbom:
     containerImage:
       enabled: true
+      uncompressedLayersSupport: true
     host:
       enabled: true
+    containerImageCollection:
+      enabled: true
+
   networkMonitoring:
     enabled: true
   processAgent:
@@ -49,18 +57,18 @@ clusterAgent:
 agents:
   useConfigMap: true
   customAgentConfig:
-    additional_endpoints:
-      "https://app.datadoghq.com":
-        - "1f8d432f24fc2a9d7390c1aa6781d9cd"
+    # additional_endpoints:
+    #   "https://app.datadoghq.com":
+    #     - "1f8d432f24fc2a9d7390c1aa6781d9cd"
 
-    compliance_config:
-      endpoints:
-        force_use_http: true
-        additional_endpoints:
-          - api_key: "1f8d432f24fc2a9d7390c1aa6781d9cd"
-            Host: "cspm-intake.datadoghq.com"
-            Port: 443
-            is_reliable: true
+    # compliance_config:
+    #   endpoints:
+    #     force_use_http: true
+    #     additional_endpoints:
+    #       - api_key: "1f8d432f24fc2a9d7390c1aa6781d9cd"
+    #         Host: "cspm-intake.datadoghq.com"
+    #         Port: 443
+    #         is_reliable: true
 
     runtime_security_config:
       endpoints:
